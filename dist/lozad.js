@@ -12,42 +12,35 @@
 
     var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-    /**
-   * Detect IE browser
-   * @const {boolean}
-   * @private
-   */
-  var isIE = typeof document !== 'undefined' && document.documentMode;
+    var defaultConfig = {
+        rootMargin: '0px',
+        threshold: 0,
+        load: function load(element) {
+            if (element.nodeName.toLowerCase() === 'picture') {
+                var img = document.createElement('img');
 
-  var defaultConfig = {
-    rootMargin: '0px',
-    threshold: 0,
-    load: function load(element) {
-      if (element.nodeName.toLowerCase() === 'picture') {
-        var img = document.createElement('img');
-        if (isIE && element.getAttribute('data-iesrc')) {
-          img.src = element.getAttribute('data-iesrc');
-        }
-        if (element.getAttribute('data-alt')) {
-          img.alt = element.getAttribute('data-alt');
-        }
-        element.appendChild(img);
-      }
-      if (element.getAttribute('data-src')) {
-        element.src = element.getAttribute('data-src');
-      }
-      if (element.getAttribute('data-srcset')) {
-        element.srcset = element.getAttribute('data-srcset');
-      }
-      if (element.getAttribute('data-background-image')) {
-        element.style.backgroundImage = 'url(\'' + element.getAttribute('data-background-image') + '\')';
-      }
-      if (element.getAttribute('data-toggle-class')) {
-        element.classList.toggle(element.getAttribute('data-toggle-class'));
-      }
-    },
-    loaded: function loaded() {}
-  };
+                if (element.hasAttribute('data-iesrc'))
+                    img.src = element.getAttribute('data-iesrc');
+
+                if (element.hasAttribute('data-alt'))
+                    img.alt = element.getAttribute('data-alt');
+
+                element.appendChild(img);
+            }
+            if (element.hasAttribute('data-src'))
+                element.src = element.getAttribute('data-src');
+
+            if (element.hasAttribute('data-srcset'))
+                element.srcset = element.getAttribute('data-srcset');
+
+            if (element.hasAttribute('data-background-image'))
+                element.style.backgroundImage = 'url(\'' + element.getAttribute('data-background-image') + '\')';
+
+            if (element.hasAttribute('data-toggle-class'))
+                element.classList.toggle(element.getAttribute('data-toggle-class'));
+        },
+        loaded: function loaded() { }
+    };
 
     function markAsLoaded(element) {
         element.setAttribute('data-loaded', true);
