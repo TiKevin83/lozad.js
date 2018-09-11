@@ -4,14 +4,15 @@
 
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.lozad = factory());
-}(this, (function () { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) :
+            (global.lozad = factory());
+}(this, (function () {
+    'use strict';
 
-  var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+    var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-  /**
+    /**
    * Detect IE browser
    * @const {boolean}
    * @private
@@ -48,90 +49,80 @@
     loaded: function loaded() {}
   };
 
-  function markAsLoaded(element) {
-    element.setAttribute('data-loaded', true);
-  }
+    function markAsLoaded(element) {
+        element.setAttribute('data-loaded', true);
+    }
 
-  var isLoaded = function isLoaded(element) {
-    return element.getAttribute('data-loaded') === 'true';
-  };
-
-  var onIntersection = function onIntersection(load, loaded) {
-    return function (entries, observer) {
-      entries.forEach(function (entry) {
-        if (entry.intersectionRatio > 0) {
-          observer.unobserve(entry.target);
-
-          if (!isLoaded(entry.target)) {
-            load(entry.target);
-            markAsLoaded(entry.target);
-            loaded(entry.target);
-          }
-        }
-      });
+    var isLoaded = function isLoaded(element) {
+        return element.getAttribute('data-loaded') === 'true';
     };
-  };
 
-  var getElements = function getElements(selector) {
-    if (selector instanceof Element) {
-      return [selector];
-    }
-    if (selector instanceof NodeList) {
-      return selector;
-    }
-    return document.querySelectorAll(selector);
-  };
-
-  function lozad () {
-    var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.lozad';
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var _defaultConfig$option = _extends({}, defaultConfig, options),
-        root = _defaultConfig$option.root,
-        rootMargin = _defaultConfig$option.rootMargin,
-        threshold = _defaultConfig$option.threshold,
-        load = _defaultConfig$option.load,
-        loaded = _defaultConfig$option.loaded;
-
-    var observer = void 0;
-
-    if (window.IntersectionObserver) {
-      observer = new IntersectionObserver(onIntersection(load, loaded), {
-        root: root,
-        rootMargin: rootMargin,
-        threshold: threshold
-      });
-    }
-
-    return {
-      observe: function observe() {
-        var elements = getElements(selector);
-
-        for (var i = 0; i < elements.length; i++) {
-          if (isLoaded(elements[i])) {
-            continue;
-          }
-          if (observer) {
-            observer.observe(elements[i]);
-            continue;
-          }
-          load(elements[i]);
-          markAsLoaded(elements[i]);
-          loaded(elements[i]);
-        }
-      },
-      triggerLoad: function triggerLoad(element) {
-        if (isLoaded(element)) {
-          return;
-        }
-
-        load(element);
-        markAsLoaded(element);
-        loaded(element);
-      }
+    var onIntersection = function onIntersection() {
+        return function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.intersectionRatio > 0) {
+                    lozad().triggerLoad(entry.target);
+                }
+            });
+        };
     };
-  }
 
-  return lozad;
+    var getElements = function getElements(selector) {
+        if (selector instanceof Element) {
+            return [selector];
+        }
+        if (selector instanceof NodeList) {
+            return selector;
+        }
+        return document.querySelectorAll(selector);
+    };
+
+    function lozad() {
+        var selector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.lozad';
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var _defaultConfig$option = _extends({}, defaultConfig, options),
+            root = _defaultConfig$option.root,
+            rootMargin = _defaultConfig$option.rootMargin,
+            threshold = _defaultConfig$option.threshold,
+            load = _defaultConfig$option.load,
+            loaded = _defaultConfig$option.loaded;
+
+        var observer = void 0;
+
+        if (window.IntersectionObserver) {
+            observer = new IntersectionObserver(onIntersection(), {
+                root: root,
+                rootMargin: rootMargin,
+                threshold: threshold
+            });
+        }
+
+        return {
+            observe: function observe() {
+                var elements = getElements(selector);
+
+                for (var i = 0; i < elements.length; i++) {
+                    if (observer) {
+                        observer.observe(elements[i]);
+                        continue;
+                    }
+                    lozad().triggerLoad(elements[i]);
+                }
+            },
+            triggerLoad: function triggerLoad(element) {
+                if (isLoaded(element)) {
+                    return;
+                }
+                if (observer) observer.unobserve(element);
+
+                load(element);
+                markAsLoaded(element);
+                loaded(element);
+            }
+        };
+    }
+
+    return lozad;
 
 })));
